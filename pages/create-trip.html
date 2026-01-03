@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GlobeTrotter | Create Trip</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #4CAF50, #2E8B57);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+    }
+
+    .box {
+      width: 420px;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 5px;
+      color: #333;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 14px;
+      color: #777;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-size: 14px;
+      color: #444;
+      margin-top: 10px;
+      display: block;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      resize: none;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #4CAF50;
+    }
+
+    textarea {
+      height: 80px;
+    }
+
+    .btn-group {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    button {
+      width: 48%;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .save-btn {
+      background: #4CAF50;
+      color: white;
+    }
+
+    .save-btn:hover {
+      background: #43a047;
+    }
+
+    .cancel-btn {
+      background: #e0e0e0;
+      color: #333;
+    }
+
+    .cancel-btn:hover {
+      background: #d5d5d5;
+    }
+
+    #msg {
+      margin-top: 12px;
+      font-size: 14px;
+      text-align: center;
+      color: #d32f2f;
+    }
+
+    .success {
+      color: #2e7d32;
+    }
+  </style>
+</head>
+
+<body>
+  
+  <button id="themeToggle" class="theme-toggle">🌙</button>
+  <div class="box">
+    <h2>Create New Trip</h2>
+    <p class="subtitle">Plan your next adventure</p>
+
+    <label>Trip Name</label>
+    <input type="text" id="tripName" placeholder="e.g. Europe Vacation">
+
+    <label>Start Date</label>
+    <input type="date" id="startDate">
+
+    <label>End Date</label>
+    <input type="date" id="endDate">
+
+    <label>Description</label>
+    <textarea id="description" placeholder="Short trip description"></textarea>
+
+    <div class="btn-group">
+      <button class="cancel-btn" onclick="goBack()">Cancel</button>
+      <button class="save-btn" onclick="createTrip()">Save Trip</button>
+    </div>
+
+    <p id="msg"></p>
+  </div>
+
+  <script>
+    const BASE_URL = "http://127.0.0.1:5000";
+    const userId = localStorage.getItem("user_id");
+
+    if (!userId) {
+      window.location.href = "login.html";
+    }
+
+    function goBack() {
+      window.location.href = "dashboard.html";
+    }
+
+    function createTrip() {
+      const tripName = document.getElementById("tripName").value.trim();
+      const startDate = document.getElementById("startDate").value;
+      const endDate = document.getElementById("endDate").value;
+      const description = document.getElementById("description").value.trim();
+      const msg = document.getElementById("msg");
+
+      msg.className = "";
+      msg.innerText = "";
+
+      if (!tripName || !startDate || !endDate) {
+        msg.innerText = "Please fill all required fields";
+        return;
+      }
+
+      fetch(`${BASE_URL}/create-trip`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          user_id: userId,
+          trip_name: tripName,
+          start_date: startDate,
+          end_date: endDate,
+          description: description
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          msg.className = "success";
+          msg.innerText = "Trip created successfully!";
+          setTimeout(() => {
+            window.location.href = "dashboard.html";
+          }, 1200);
+        } else {
+          msg.innerText = data.message || "Failed to create trip";
+        }
+      })
+      .catch(() => {
+        msg.innerText = "Server error. Please try again.";
+      });
+    }
+  </script>
+  <script src="../js/theme.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GlobeTrotter | Login</title>
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <!-- Dark Mode Toggle -->
+  <button id="themeToggle" class="theme-toggle">🌙</button>
+
+  <!-- Login Box -->
+  <div class="box">
+    <h2>GlobeTrotter</h2>
+    <p class="subtitle">Login to your account</p>
+
+    <input type="email" id="email" placeholder="Email Address">
+    <input type="password" id="password" placeholder="Password">
+
+    <button class="submit-btn" onclick="login()">Login</button>
+
+    <p id="msg"></p>
+
+    <div class="signup-link">
+      Don't have an account? <a href="signup.html">Sign Up</a>
+    </div>
+  </div>
+
+  <script src="../js/theme.js"></script>
+  <script>
+    const BASE_URL = "http://127.0.0.1:5000";
+
+    function login() {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const msg = document.getElementById("msg");
+
+      msg.className = "";
+      msg.innerText = "";
+
+      if (!email || !password) {
+        msg.className = "error";
+        msg.innerText = "Both fields are required";
+        return;
+      }
+
+      fetch(`${BASE_URL}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          msg.className = "success";
+          msg.innerText = "Login successful! Redirecting...";
+          setTimeout(() => window.location.href = "dashboard.html", 1500);
+        } else {
+          msg.className = "error";
+          msg.innerText = data.message || "Login failed";
+        }
+      })
+      .catch(() => {
+        msg.className = "error";
+        msg.innerText = "Server error. Please try again.";
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GlobeTrotter | Dashboard</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #4CAF50, #2E8B57);
+      padding: 30px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 26px;
+    }
+
+    .logout-btn {
+      background: white;
+      color: #2E8B57;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .logout-btn:hover {
+      background: #f1f1f1;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    .top-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 20px;
+    }
+
+    .new-trip-btn {
+      background: #ffffff;
+      color: #2E8B57;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    }
+
+    .new-trip-btn:hover {
+      background: #f2f2f2;
+    }
+
+    .trip-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .trip-card {
+      background: white;
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      transition: transform 0.2s;
+    }
+
+    .trip-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .trip-card h3 {
+      margin-top: 0;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    .trip-dates {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .trip-desc {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 15px;
+    }
+
+    .view-btn {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .view-btn:hover {
+      background: #43a047;
+    }
+
+    .empty {
+      text-align: center;
+      color: white;
+      font-size: 16px;
+      margin-top: 60px;
+    }
+  </style>
+</head>
+
+<body>
+  
+  <button id="themeToggle" class="theme-toggle">🌙</button>
+
+  <div class="header">
+    <h1>🌍 GlobeTrotter Dashboard</h1>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+  <div class="container">
+
+    <div class="top-actions">
+      <button class="new-trip-btn" onclick="goToCreateTrip()">
+        ➕ Plan New Trip
+      </button>
+    </div>
+
+    <div id="tripGrid" class="trip-grid"></div>
+
+    <div id="emptyMsg" class="empty" style="display:none;">
+      No trips yet. Start planning your first adventure!
+    </div>
+
+  </div>
+
+  <script>
+    const BASE_URL = "http://127.0.0.1:5000";
+    const userId = localStorage.getItem("user_id");
+
+    if (!userId) {
+      window.location.href = "login.html";
+    }
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = "login.html";
+    }
+
+    function goToCreateTrip() {
+      window.location.href = "create-trip.html";
+    }
+
+    function loadTrips() {
+      fetch(`${BASE_URL}/my-trips/${userId}`)
+        .then(res => res.json())
+        .then(data => {
+          const grid = document.getElementById("tripGrid");
+          const empty = document.getElementById("emptyMsg");
+          grid.innerHTML = "";
+
+          if (!data || data.length === 0) {
+            empty.style.display = "block";
+            return;
+          }
+
+          empty.style.display = "none";
+
+          data.forEach(trip => {
+            const card = document.createElement("div");
+            card.className = "trip-card";
+            card.innerHTML = `
+              <h3>${trip.trip_name}</h3>
+              <div class="trip-dates">
+                ${trip.start_date} → ${trip.end_date}
+              </div>
+              <div class="trip-desc">
+                ${trip.description || "No description provided"}
+              </div>
+              <button class="view-btn" onclick="openTrip(${trip.id})">
+                View Itinerary
+              </button>
+            `;
+            grid.appendChild(card);
+          });
+        })
+        .catch(() => {
+          document.getElementById("emptyMsg").innerText =
+            "Unable to load trips. Please try again later.";
+          document.getElementById("emptyMsg").style.display = "block";
+        });
+    }
+
+    function openTrip(tripId) {
+      localStorage.setItem("trip_id", tripId);
+      window.location.href = "itinerary.html";
+    }
+
+    loadTrips();
+  </script>
+  <script src="../js/theme.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GlobeTrotter | Signup</title>
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <!-- Dark Mode Toggle -->
+  <button id="themeToggle" class="theme-toggle">🌙</button>
+
+  <!-- Signup Box -->
+  <div class="box">
+    <h2>GlobeTrotter</h2>
+    <p class="subtitle">Create your account</p>
+
+    <input type="text" id="name" placeholder="Full Name">
+    <input type="email" id="email" placeholder="Email Address">
+    <input type="password" id="password" placeholder="Password">
+
+    <button class="submit-btn" onclick="signup()">Sign Up</button>
+
+    <p id="msg"></p>
+
+    <div class="login-link">
+      Already have an account? <a href="login.html">Login</a>
+    </div>
+  </div>
+
+  <script src="../js/theme.js"></script>
+  <script>
+    const BASE_URL = "http://127.0.0.1:5000";
+
+    function signup() {
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const msg = document.getElementById("msg");
+
+      msg.className = "";
+      msg.innerText = "";
+
+      if (!name || !email || !password) {
+        msg.className = "error";
+        msg.innerText = "All fields are required";
+        return;
+      }
+
+      fetch(`${BASE_URL}/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          msg.className = "success";
+          msg.innerText = "Signup successful! Redirecting...";
+          setTimeout(() => window.location.href = "login.html", 1500);
+        } else {
+          msg.className = "error";
+          msg.innerText = data.message || "Signup failed";
+        }
+      })
+      .catch(() => {
+        msg.className = "error";
+        msg.innerText = "Server error. Please try again.";
+      });
+    }
+  </script>
+</body>
+</html>
