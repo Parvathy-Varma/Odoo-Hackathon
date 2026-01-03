@@ -3,141 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>GlobeTrotter | Itinerary</title>
-
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #4CAF50, #2E8B57);
-      padding: 30px;
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: white;
-      margin-bottom: 30px;
-    }
-
-    .header h1 {
-      margin: 0;
-      font-size: 26px;
-    }
-
-    .back-btn {
-      background: white;
-      color: #2E8B57;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .back-btn:hover {
-      background: #f1f1f1;
-    }
-
-    .container {
-      max-width: 1100px;
-      margin: auto;
-      display: grid;
-      grid-template-columns: 1fr 2fr;
-      gap: 25px;
-    }
-
-    .box {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    }
-
-    h3 {
-      margin-top: 0;
-      margin-bottom: 15px;
-      color: #333;
-    }
-
-    label {
-      font-size: 14px;
-      color: #444;
-      display: block;
-      margin-top: 10px;
-    }
-
-    input {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-    }
-
-    input:focus {
-      outline: none;
-      border-color: #4CAF50;
-    }
-
-    button {
-      width: 100%;
-      padding: 9px;
-      margin-top: 12px;
-      background: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #43a047;
-    }
-
-    .list {
-      margin-top: 10px;
-    }
-
-    .city-card {
-      border: 1px solid #e0e0e0;
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 15px;
-    }
-
-    .city-title {
-      font-weight: bold;
-      color: #2E8B57;
-      margin-bottom: 8px;
-    }
-
-    .activity {
-      font-size: 14px;
-      margin-left: 10px;
-      margin-bottom: 4px;
-      color: #444;
-    }
-
-    .empty {
-      text-align: center;
-      color: #777;
-      font-size: 15px;
-      margin-top: 30px;
-    }
-  </style>
+  <link rel="stylesheet" href="../css/styles.css">
 </head>
-
 <body>
-
+  <!-- Dark mode toggle -->
   <button id="themeToggle" class="theme-toggle">🌙</button>
 
   <div class="header">
@@ -150,23 +19,19 @@
     <!-- LEFT COLUMN -->
     <div class="box">
       <h3>Add City</h3>
-
-      <label>City Name</label>
+      <label for="cityName">City Name</label>
       <input type="text" id="cityName" placeholder="e.g. Paris">
 
-      <label>Number of Days</label>
+      <label for="days">Number of Days</label>
       <input type="number" id="days" min="1" placeholder="e.g. 3">
 
       <button onclick="addCity()">Add City</button>
 
-      <hr style="margin:20px 0">
-
-      <h3>Add Activity</h3>
-
-      <label>City Name</label>
+      <h3 style="margin-top: 30px;">Add Activity</h3>
+      <label for="activityCity">City Name</label>
       <input type="text" id="activityCity" placeholder="e.g. Paris">
 
-      <label>Activity</label>
+      <label for="activityName">Activity</label>
       <input type="text" id="activityName" placeholder="e.g. Eiffel Tower">
 
       <button onclick="addActivity()">Add Activity</button>
@@ -176,9 +41,7 @@
     <div class="box">
       <h3>Your Itinerary</h3>
       <div id="itineraryList" class="list"></div>
-      <div id="emptyMsg" class="empty" style="display:none;">
-        No itinerary added yet
-      </div>
+      <div id="emptyMsg" class="empty">No itinerary added yet</div>
     </div>
 
   </div>
@@ -204,11 +67,7 @@
       fetch(`${BASE_URL}/add-city`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          trip_id: tripId,
-          city_name: city,
-          days: days
-        })
+        body: JSON.stringify({ trip_id: tripId, city_name: city, days: days })
       })
       .then(() => {
         document.getElementById("cityName").value = "";
@@ -226,11 +85,7 @@
       fetch(`${BASE_URL}/add-activity`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          trip_id: tripId,
-          city_name: city,
-          activity: activity
-        })
+        body: JSON.stringify({ trip_id: tripId, city_name: city, activity: activity })
       })
       .then(() => {
         document.getElementById("activityCity").value = "";
@@ -264,9 +119,7 @@
             });
 
             div.innerHTML = `
-              <div class="city-title">
-                ${city.city_name} (${city.days} days)
-              </div>
+              <div class="city-title">${city.city_name} (${city.days} days)</div>
               ${activitiesHtml || '<div class="activity">No activities added</div>'}
             `;
 
@@ -277,7 +130,7 @@
 
     loadItinerary();
   </script>
-  <script src="../js/theme.js"></script>
 
+  <script src="../js/theme.js"></script>
 </body>
 </html>

@@ -2,85 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Trip Budget</title>
-
-  <style>
-    body {
-      
-      margin: 0;
-      font-family: "Segoe UI", sans-serif;
-      background: linear-gradient(to right, #11998e, #38ef7d);
-      min-height: 100vh;
-      padding: 40px;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: auto;
-      background: #fff;
-      border-radius: 12px;
-      padding: 30px;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-    }
-
-    h2 {
-      text-align: center;
-      margin-bottom: 30px;
-      color: #11998e;
-    }
-
-    .total-card {
-      background: #11998e;
-      color: white;
-      padding: 20px;
-      border-radius: 10px;
-      text-align: center;
-      font-size: 24px;
-      margin-bottom: 30px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-
-    th, td {
-      padding: 12px;
-      text-align: center;
-      border-bottom: 1px solid #ddd;
-    }
-
-    th {
-      background: #f5f5f5;
-    }
-
-    .back-btn {
-      margin-top: 30px;
-      text-align: center;
-    }
-
-    button {
-      padding: 12px 25px;
-      border: none;
-      border-radius: 8px;
-      background: #11998e;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      opacity: 0.9;
-    }
-  </style>
+  <title>GlobeTrotter | Trip Budget</title>
+  <link rel="stylesheet" href="../css/styles.css">
 </head>
-
 <body>
 
+  <!-- Dark mode toggle -->
   <button id="themeToggle" class="theme-toggle">🌙</button>
-  
-  <div class="container">
+
+  <div class="box container">
     <h2>💰 Trip Budget Overview</h2>
 
     <div class="total-card" id="totalCost">
@@ -108,8 +38,12 @@
   </div>
 
   <script>
-    const BASE_URL = "http://localhost:5000"; // backend URL
-    const tripId = localStorage.getItem("tripId");
+    const BASE_URL = "http://127.0.0.1:5000";
+    const tripId = localStorage.getItem("trip_id");
+
+    if (!tripId) {
+      window.location.href = "dashboard.html";
+    }
 
     function loadBudget() {
       fetch(`${BASE_URL}/api/budget/${tripId}`)
@@ -122,17 +56,18 @@
           table.innerHTML = "";
 
           data.breakdown.forEach(item => {
-            table.innerHTML += `
-              <tr>
-                <td>${item.city}</td>
-                <td>${item.activity}</td>
-                <td>₹${item.cost}</td>
-              </tr>
+            const row = document.createElement("tr");
+            row.innerHTML = `
+              <td>${item.city}</td>
+              <td>${item.activity}</td>
+              <td>₹${item.cost}</td>
             `;
+            table.appendChild(row);
           });
         })
         .catch(err => {
-          alert("Failed to load budget");
+          const table = document.getElementById("budgetTable");
+          table.innerHTML = `<tr><td colspan="3">Failed to load budget</td></tr>`;
         });
     }
 
@@ -142,7 +77,7 @@
 
     loadBudget();
   </script>
-  <script src="../js/theme.js"></script>
 
+  <script src="../js/theme.js"></script>
 </body>
 </html>
